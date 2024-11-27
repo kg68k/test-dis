@@ -151,6 +151,7 @@ static char* fpconv_x_inreal(char* buf, ExtendedReal* xr) {
   return itox8_without_0supress(buf, peeklv(xr->ul[2]));
 }
 
+#ifndef NO_PRINTF_LDBL
 static inline char* fpconv_x_printf(char* buf, ExtendedReal* xr) {
   char* p = buf + sprintf(buf, "0f%.30Lg", peekExtended(xr));
 
@@ -166,6 +167,7 @@ static inline char* fpconv_x_printf(char* buf, ExtendedReal* xr) {
 
   return p;
 }
+#endif
 
 // Extended-Precision Real 文字列化
 char* fpconv_x(char* buf, codeptr valp) {
