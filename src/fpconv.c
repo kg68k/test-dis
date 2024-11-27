@@ -117,16 +117,6 @@ static ExtendedReal* alignExtendedReal(codeptr valp, ExtendedReal* buf) {
   return isodd(valp) ? memcpy(buf, valp, sizeof(*buf)) : (ExtendedReal*)valp;
 }
 
-static long double peekExtended(ExtendedReal* xr) {
-#ifdef __BIG_ENDIAN__
-  return *(long double*)xr;
-#else
-  ExtendedReal le = {
-      .ul = {peeklv(xr->ul[2]), peeklv(xr->ul[1]), peeklv(xr->ul[0]) >> 16, 0}};
-  return *(long double*)&le;
-#endif
-}
-
 static boolean is_normalized_x(ExtendedReal* xr) {
   ULONG ul0 = peeklv(xr->ul[0]);
   UWORD e = (ul0 >> 16) & 0x7fff;
@@ -152,6 +142,16 @@ static char* fpconv_x_inreal(char* buf, ExtendedReal* xr) {
 }
 
 #ifndef NO_PRINTF_LDBL
+static long double peekExtended(ExtendedReal* xr) {
+#ifdef __BIG_ENDIAN__
+  return *(long double*)xr;
+#else
+  ExtendedReal le = {
+      .ul = {peeklv(xr->ul[2]), peeklv(xr->ul[1]), peeklv(xr->ul[0]) >> 16, 0}};
+  return *(long double*)&le;
+#endif
+}
+
 static inline char* fpconv_x_printf(char* buf, ExtendedReal* xr) {
   char* p = buf + sprintf(buf, "0f%.30Lg", peekExtended(xr));
 
